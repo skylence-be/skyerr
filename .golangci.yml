@@ -1,0 +1,32 @@
+# Mirrors the portable linters enforced across Skylence (see binary-skylence
+# .golangci.yml). Custom plugins (nolintpolicy, mutexio, dbnotfound) are
+# binary-only and omitted here — skyerr is a pure error-code library.
+version: "2"
+
+linters:
+  enable:
+    - errcheck       # unchecked errors
+    - govet          # go vet
+    - staticcheck    # comprehensive static analysis
+    - unused         # unused code
+    - gosec          # security issues
+    - gocritic       # opinionated diagnostic + style checks
+    - misspell       # spelling in comments/strings
+    - unconvert      # unnecessary type conversions
+    - unparam        # unused function parameters
+  settings:
+    gosec:
+      excludes:
+        - G104   # unhandled errors (covered by errcheck)
+  exclusions:
+    rules:
+      # SKY-NOTIF-002's value is an error-code string, not a credential. gosec's
+      # G101 heuristic matches the "Secret" identifier name; the value is a
+      # public constant code, so the finding is a false positive.
+      - path: errors.go
+        linters: [gosec]
+        text: "G101"
+
+formatters:
+  enable:
+    - gofumpt
